@@ -1,0 +1,14 @@
+.root-content {
+    margin-left: 250px;
+    padding: 40px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}

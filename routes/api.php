@@ -17,8 +17,12 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'admin'], function () {
 });
 
-Route::group(['prefix' => 'app'], function () {
-    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-        return $request->user();
+Route::group(['prefix' => 'client'], function () {
+
+    Route::group(['prefix' => 'auth'], static function () {
+
+        Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+            return $request->user();
+        });
     });
 });

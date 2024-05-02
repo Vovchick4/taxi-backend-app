@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,15 +14,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['prefix' => 'admin'], function () {
+Route::group(['prefix' => 'auth'], function () {
+
+    Route::get('/me', [AuthController::class, 'getUser'])->middleware('auth.phone');
+    Route::post('/send-code', [AuthController::class, 'sendCode']);
+    Route::post('/verify-code', [AuthController::class, 'verifyCode']);
+});
+
+Route::group(['prefix' => 'driver'], function () {
+
+    Route::group(['prefix' => 'order', 'middleware' => 'auth.phone'], function () {
+    });
 });
 
 Route::group(['prefix' => 'client'], function () {
 
-    Route::group(['prefix' => 'auth'], static function () {
-
-        Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-            return $request->user();
-        });
+    Route::group(['prefix' => 'order', 'middleware' => 'auth.phone'], function () {
     });
 });

@@ -8,6 +8,7 @@
     <link href="
     https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/slate/bootstrap.min.css
     " rel="stylesheet">
+    @stack('scripts')
 </head>
 
 <body>

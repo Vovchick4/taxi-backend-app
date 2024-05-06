@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use Twilio\Rest\Client as TwilioClient;
 use Illuminate\Support\Str;
 use App\Models\Client;
 use App\Models\VerifyCode;
@@ -12,6 +14,16 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
+    protected $twilio;
+
+    public function __construct()
+    {
+        $this->twilio = new TwilioClient(
+            config('services.twilio.sid'),
+            config('services.twilio.token')
+        );
+    }
+
     /**
      * Send Code. Verify user indity.
      */
@@ -24,6 +36,15 @@ class AuthController extends Controller
             $potentialCode = new VerifyCode();
             $potentialCode->phone = $phone;
             $potentialCode->save();
+
+            // Send the verification code via SMS
+            $this->twilio->messages->create(
+                $request->input('phone_number'), // To
+                [
+                    'from' => config('services.twilio.from'), // From
+                    'body' => "Your verification code is: {$potentialCode->code}"
+                ]
+            );
 
             return response()->json(['message' => 'Send code to the phone!', 'data' => ['phone' => $phone]], 200);
         } catch (\Exception $e) {
@@ -41,7 +62,20 @@ class AuthController extends Controller
             $code = $request->input('code');
             $phone = $request->input('phone');
 
-            $findCode = VerifyCode::where([['phone' => $phone], ['code' => $code]])->orderByDesc('created_at')->first();
+            // Assuming $phone and $code are defined and provided as input
+
+            // Calculate the expiration time as 2 minutes ago from the current time
+            $expirationTime = Carbon::now()->subMinutes(2);
+
+            // Query the VerifyCode model for the specified phone number and code,
+            // and also check that the code was created within the last 2 minutes
+            $findCode = VerifyCode::where([
+                ['phone' => $phone],
+                ['code' => $code],
+            ])
+                ->where('created_at', '>=', $expirationTime) // Ensure the code is not older than 2 minutes
+                ->orderByDesc('created_at')
+                ->first();
 
             if (!$findCode) {
                 return response()->json(['message' => 'This code not valid or expired!'], 422);

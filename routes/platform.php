@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Orchid\Screens\Driver\DriverEditScreen;
+use App\Orchid\Screens\Driver\DriverListScreen;
 use Tabuna\Breadcrumbs\Trail;
 use Illuminate\Support\Facades\Route;
 use App\Orchid\Screens\PlatformScreen;
@@ -131,3 +133,22 @@ Route::screen('taxi/create', TaxiEditScreen::class)
     ->breadcrumbs(fn (Trail $trail) => $trail
         ->parent('platform.screens.taxi')
         ->push(__('Create'), route('platform.screens.taxi.create')));
+
+// Driver
+Route::screen('driver', DriverListScreen::class)
+    ->name('platform.screens.driver')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push(__('Driver'), route('platform.screens.driver')));
+
+Route::screen('driver/{driver}/edit', DriverEditScreen::class)
+    ->name('platform.screens.driver.edit')
+    ->breadcrumbs(fn (Trail $trail, $driver) => $trail
+        ->parent('platform.screens.driver')
+        ->push($driver->name, route('platform.screens.driver.edit', $driver->id)));
+
+Route::screen('driver/create', DriverEditScreen::class)
+    ->name('platform.screens.driver.create')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.screens.driver')
+        ->push(__('Create'), route('platform.screens.driver.create')));

@@ -50,6 +50,10 @@ class PlatformProvider extends OrchidServiceProvider
                 ->icon('bi.list-ul')
                 ->route('platform.screens.taxi'),
 
+            Menu::make('Driver')
+                ->icon('bi.list-ul')
+                ->route('platform.screens.driver'),
+
             Menu::make(__('Users'))
                 ->icon('bs.people')
                 ->route('platform.systems.users')
@@ -77,7 +81,8 @@ class PlatformProvider extends OrchidServiceProvider
                 ->addPermission('platform.systems.users', __('Users')),
             ItemPermission::group(__('Screens'))
                 ->addPermission('platform.screen.car_classes', __('Car classes'))
-                ->addPermission('platform.screen.taxi', __('Taxi')),
+                ->addPermission('platform.screen.taxi', __('Taxi'))
+                ->addPermission('platform.screen.driver', __('Driver')),
         ];
     }
 }

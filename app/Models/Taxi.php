@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Driver;
 use App\Models\CarClass;
 use Orchid\Screen\AsSource;
 use Orchid\Filters\Filterable;
@@ -10,6 +11,7 @@ use Orchid\Filters\Types\Where;
 use Illuminate\Database\Eloquent\Model;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Taxi extends Model
 {
@@ -58,10 +60,26 @@ class Taxi extends Model
     ];
 
     /**
-     * Define a relationship to the Client model.
+     * Define a relationship to the CarClass model.
      */
     public function car_class()
     {
         return $this->belongsTo(CarClass::class);
+    }
+
+    /**
+     * Define a relationship to the Driver model.
+     */
+    public function driver(): HasOne
+    {
+        return $this->hasOne(Driver::class);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullAttribute(): string
+    {
+        return $this->attributes['brand'] . ' (' . $this->attributes['model'] . ')' . ' ' . $this->attributes['VIN_code'];
     }
 }

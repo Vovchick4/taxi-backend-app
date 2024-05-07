@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Orchid\Layouts\Taxi;
+namespace App\Orchid\Layouts\Driver;
 
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
@@ -10,15 +10,14 @@ use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Components\Cells\DateTimeSplit;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
-use Orchid\Screen\Fields\Input;
-use App\Models\Taxi;
+use App\Models\Driver;
 
-class TaxiListLayout extends Table
+class DriverListLayout extends Table
 {
     /**
      * @var string
      */
-    public $target = 'taxi';
+    public $target = 'drivers';
 
     /**
      * @return TD[]
@@ -26,27 +25,17 @@ class TaxiListLayout extends Table
     public function columns(): array
     {
         return [
-            TD::make('brand', __('Brand'))
-                ->filter(Input::make())
-                ->sort(),
 
-            TD::make('model', __('Model'))
-                ->filter(Input::make())
-                ->sort(),
+            TD::make('name', __('Fullname'))
+                ->render(fn (Driver $driver) => Link::make($driver->name . ' ' . $driver->surname)
+                    ->route('platform.screens.driver.edit', $driver->id)),
 
-            TD::make('driver', __('Driver info'))
-                ->render(fn (Taxi $taxi) => $taxi->driver->name . ' ' . $taxi->driver->surname . ',<br/>' . $taxi->driver->phone),
+            TD::make('phone', __('Phone')),
 
-            TD::make('VIN_code', __('VIN Code'))
-                ->filter(Input::make())
-                ->sort(),
+            TD::make('email', __('Email')),
 
-            TD::make('color', __('Color'))
-                ->render(fn ($taxi) => '<i style="color: ' . $taxi->color . ';font-size:24px;">●</i>')
-                ->sort(),
-
-            TD::make('car_class', __('Car class'))
-                ->render(fn ($taxi) =>  $taxi->car_class->name),
+            TD::make('taxi', __('Taxi'))
+                ->render(fn (Driver $driver) => $driver->taxi->brand . ' ' . $driver->taxi->model . ' ' . '<i style="color: ' . $driver->taxi->color . ';font-size:24px;">●</i>'),
 
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeSplit::class)
@@ -61,19 +50,19 @@ class TaxiListLayout extends Table
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
                 ->width('100px')
-                ->render(fn (Taxi $taxi) => DropDown::make()
+                ->render(fn (Driver $driver) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
 
                         Link::make(__('Edit'))
-                            ->route('platform.screens.taxi.edit', $taxi->id)
+                            ->route('platform.screens.driver.edit', $driver->id)
                             ->icon('bs.pencil'),
 
                         Button::make(__('Delete'))
                             ->icon('bs.trash3')
-                            ->confirm(__('Confirm delete car class?'))
+                            ->confirm(__('Confirm delete a driver?'))
                             ->method('remove', [
-                                'id' => $taxi->id,
+                                'id' => $driver->id,
                             ]),
                     ])),
         ];

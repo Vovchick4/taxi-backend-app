@@ -60,4 +60,12 @@ class Order extends Model
     {
         return $this->belongsTo(Client::class);
     }
+
+    /**
+     * Define a relationship to the Client model.
+     */
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class);
+    }
 }

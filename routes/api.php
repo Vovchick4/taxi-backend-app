@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Client\ClientOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,5 +31,6 @@ Route::group(['prefix' => 'driver'], function () {
 Route::group(['prefix' => 'client'], function () {
 
     Route::group(['prefix' => 'order', 'middleware' => 'auth.phone'], function () {
+        Route::post('/create', [ClientOrderController::class, 'create']);
     });
 });

@@ -38,13 +38,13 @@ class AuthController extends Controller
             $potentialCode->save();
 
             // Send the verification code via SMS
-            $this->twilio->messages->create(
-                $request->input('phone_number'), // To
-                [
-                    'from' => config('services.twilio.from'), // From
-                    'body' => "Your verification code is: {$potentialCode->code}"
-                ]
-            );
+            // $this->twilio->messages->create(
+            //     $potentialCode->phone, // To
+            //     [
+            //         'from' => config('services.twilio.from'), // From
+            //         'body' => "Your verification code is: {$potentialCode->code}"
+            //     ]
+            // );
 
             return response()->json(['message' => 'Send code to the phone!', 'data' => ['phone' => $phone]], 200);
         } catch (\Exception $e) {
@@ -70,10 +70,10 @@ class AuthController extends Controller
             // Query the VerifyCode model for the specified phone number and code,
             // and also check that the code was created within the last 2 minutes
             $findCode = VerifyCode::where([
-                ['phone' => $phone],
-                ['code' => $code],
+                ['phone', '=', $phone],
+                ['code', '=', $code],
             ])
-                ->where('created_at', '>=', $expirationTime) // Ensure the code is not older than 2 minutes
+                ->where('created_at', '>=', $expirationTime)
                 ->orderByDesc('created_at')
                 ->first();
 
@@ -90,7 +90,7 @@ class AuthController extends Controller
 
             $createdUser = new Client();
             $createdUser->phone = $phone;
-            $findedClient->remember_token = Str::random(60);
+            $createdUser->remember_token = Str::random(60);
             $createdUser->save();
 
             return response()->json(['message' => 'Created account!', 'data' => $createdUser->get()], 200);

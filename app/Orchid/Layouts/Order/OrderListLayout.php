@@ -49,9 +49,9 @@ class OrderListLayout extends Table
                     ->icon('bs.three-dots-vertical')
                     ->list([
 
-                        Link::make(__('Edit'))
-                            ->route('platform.systems.orders.edit', $order->id)
-                            ->icon('bs.pencil'),
+                        // Link::make(__('Edit'))
+                        //     ->route('platform.systems.orders.edit', $order->id)
+                        //     ->icon('bs.pencil'),
 
                         Button::make(__('Delete'))
                             ->icon('bs.trash3')

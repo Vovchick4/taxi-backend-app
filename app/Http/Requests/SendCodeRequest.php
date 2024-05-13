@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 
 class SendCodeRequest extends FormRequest
 {
@@ -28,20 +31,22 @@ class SendCodeRequest extends FormRequest
     }
 
     /**
-     * Customize the validation response to return errors in JSON format.
+     * Handle a failed validation attempt.
      *
      * @param \Illuminate\Contracts\Validation\Validator $validator
-     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
-    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    protected function failedValidation(Validator $validator)
     {
         // Create a custom JSON response for validation errors
-        $errors = $validator->errors();
+        $errors = $validator->errors()->toArray();
 
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Validation errors',
-            'errors' => $errors
-        ], 422); // HTTP status code 422 for validation errors
+        throw new HttpResponseException(
+            response()->json([
+                'status' => 'error',
+                'message' => 'Validation errors',
+                'errors' => $errors,
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY)
+        );
     }
 }

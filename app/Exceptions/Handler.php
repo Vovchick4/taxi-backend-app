@@ -2,8 +2,9 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -23,8 +24,23 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        $this->renderable(function (Throwable $e) {
+            if ($e instanceof NotFoundHttpException) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => __('messages.page_not_found'),
+                ], 404);
+            }
         });
+    }
+
+    protected function invalidJson($request, $exception)
+    {
+        return response()->json([
+            'data' => [],
+            'message' => 'The given data was invalid',
+            'errors' => $exception->errors(),
+            'status' => $exception->status
+        ], $exception->status);
     }
 }

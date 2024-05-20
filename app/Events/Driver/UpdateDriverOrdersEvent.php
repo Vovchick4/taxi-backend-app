@@ -8,7 +8,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class TrackOrderEvent implements ShouldBroadcast
+class UpdateDriverOrdersEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -26,6 +26,6 @@ class TrackOrderEvent implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new PrivateChannel('track-order' . $this->order->id);
+        return new PrivateChannel('driver-track-new-order' . $this->order->car_class_id);
     }
 }

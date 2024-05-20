@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\Order;
 
+use App\Enums\OrderPaymentStatus;
 use App\Models\Order;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
-use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Components\Cells\DateTimeSplit;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
@@ -28,16 +28,24 @@ class OrderListLayout extends Table
         return [
 
             TD::make('status', __('Status'))
-                ->render(fn (Order $order) => $order->status->description()),
+                ->render(fn (Order $order) => $order->status->description() . ' ' . '<i style="color: ' . $order->status->color() . ';font-size:24px;">●</i>'),
 
-            TD::make('payment_status', __('Payment Status')),
+
+            TD::make('payment_status', __('Payment Status'))
+                ->render(fn (Order $order) => $order->payment_status->value . ' ' . '<i style="color: ' . ($order->payment_status->value === OrderPaymentStatus::Paid->value ? 'green' : 'red') . ';font-size:24px;">●</i>'),
+
+            TD::make('total_price', __('Total price UAH')),
+
+            TD::make('distance', __('Distance km')),
+
+            TD::make('start_street_name', __('Start street name')),
+
+            TD::make('end_street_name', __('End street name')),
+
+            TD::make('client', __('Client info'))
+                ->render(fn (Order $order) => $order->client->phone),
 
             TD::make('created_at', __('Created'))
-                ->usingComponent(DateTimeSplit::class)
-                ->align(TD::ALIGN_RIGHT)
-                ->sort(),
-
-            TD::make('updated_at', __('Last edit'))
                 ->usingComponent(DateTimeSplit::class)
                 ->align(TD::ALIGN_RIGHT)
                 ->sort(),
@@ -52,6 +60,10 @@ class OrderListLayout extends Table
                         // Link::make(__('Edit'))
                         //     ->route('platform.systems.orders.edit', $order->id)
                         //     ->icon('bs.pencil'),
+
+                        Link::make(__('View'))
+                            ->route('platform.screens.order.view', $order->id)
+                            ->icon('bs.eye'),
 
                         Button::make(__('Delete'))
                             ->icon('bs.trash3')

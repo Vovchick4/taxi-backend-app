@@ -139,8 +139,21 @@ class Order extends Model
      */
     public function scopeActive($query)
     {
+        // Define the condition for an ACTIVE order
+        // You can modify the condition to match your definition of an active order.
+        return $query->where('status', OrderStatus::Active->value);
+    }
+
+    /**
+     * Local scope to find orders by NEW status.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeNew($query)
+    {
         // Define the condition for an active order
         // You can modify the condition to match your definition of an active order.
-        return $query->where('status', OrderStatus::Active);
+        return $query->where('status', OrderStatus::New->value);
     }
 }

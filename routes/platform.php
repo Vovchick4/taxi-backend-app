@@ -19,6 +19,7 @@ use App\Orchid\Screens\Examples\ExampleScreen;
 use App\Orchid\Screens\CarClass\CarClassEditScreen;
 use App\Orchid\Screens\CarClass\CarClassListScreen;
 use App\Orchid\Screens\Examples\ExampleChartsScreen;
+use App\Orchid\Screens\Order\OrderViewScreen;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,7 +95,17 @@ Route::screen('example', ExampleScreen::class)
 Route::screen('/examples/charts', ExampleChartsScreen::class)->name('platform.example.charts');
 
 //ScreensOrder
-Route::screen('orders', OrderScreen::class)->name('platform.screens.orders');
+Route::screen('orders', OrderScreen::class)
+    ->name('platform.screens.orders')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push(__('Order'), route('platform.screens.orders')));
+
+Route::screen('orders/{order}/view', OrderViewScreen::class)
+    ->name('platform.screens.order.view')
+    ->breadcrumbs(fn (Trail $trail, $order) => $trail
+        ->parent('platform.screens.orders')
+        ->push($order->id, route('platform.screens.orders', $order->id)));
 
 //ScreensCarClasses
 Route::screen('car_classes', CarClassListScreen::class)

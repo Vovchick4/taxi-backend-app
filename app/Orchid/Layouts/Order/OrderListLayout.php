@@ -28,11 +28,11 @@ class OrderListLayout extends Table
         return [
 
             TD::make('status', __('Status'))
-                ->render(fn (Order $order) => $order->status->description() . ' ' . '<i style="color: ' . $order->status->color() . ';font-size:24px;">●</i>'),
+                ->render(fn (Order $order) => view('label_marker', ['label' => $order->status->description(), 'color' => $order->status->color()])),
 
 
             TD::make('payment_status', __('Payment Status'))
-                ->render(fn (Order $order) => $order->payment_status->value . ' ' . '<i style="color: ' . ($order->payment_status->value === OrderPaymentStatus::Paid->value ? 'green' : 'red') . ';font-size:24px;">●</i>'),
+                ->render(fn (Order $order) => view('label_marker', ['label' => $order->payment_status->value, 'color' => $order->payment_status->color()])),
 
             TD::make('total_price', __('Total price UAH')),
 

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
+use App\Enums\ClientRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -19,6 +19,7 @@ class Client extends Authenticatable
         'name',
         'email',
         'phone',
+        'role',
         'password',
         'remember_token',
     ];
@@ -29,6 +30,7 @@ class Client extends Authenticatable
     ];
 
     protected $casts = [
+        'role' => ClientRole::class,
         'verified_at' => 'datetime',
         'verify_date' => 'datetime',
     ];

@@ -35,7 +35,7 @@ class DriverListLayout extends Table
             TD::make('email', __('Email')),
 
             TD::make('taxi', __('Taxi'))
-                ->render(fn (Driver $driver) => $driver->taxi->brand . ' ' . $driver->taxi->model . ' ' . '<i style="color: ' . $driver->taxi->color . ';font-size:24px;">●</i>'),
+                ->render(fn (Driver $driver) => view('label_marker', ['label' => $driver->taxi->brand . ' ' . $driver->taxi->model, 'color' => $driver->taxi->color])),
 
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeSplit::class)

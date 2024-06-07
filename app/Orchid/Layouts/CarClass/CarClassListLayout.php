@@ -32,6 +32,13 @@ class CarClassListLayout extends Table
 
             TD::make('slug', __('Slug')),
 
+            TD::make('is_discount', __('Discount'))
+                ->render(fn (CarClass $carClass) => $carClass->is_discount ? 'ON' : 'OFF'),
+
+            TD::make('tariff_price', __('Tariff price')),
+
+            TD::make('tariff_discount_price', __('Discount price')),
+
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeSplit::class)
                 ->align(TD::ALIGN_RIGHT)

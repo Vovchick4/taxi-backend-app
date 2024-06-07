@@ -17,7 +17,7 @@ class DriverOrderController extends Controller
     public function getOrders($request): JsonResponse
     {
         try {
-            return response()->json(['data' => Order::where('driver_id', $request->user->id)->get(), 'message' => 'Order accepted!'], 200);
+            return response()->json(['data' => Order::where('driver_id', $request->user->id)->get(), 'message' => 'OK!'], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -30,7 +30,7 @@ class DriverOrderController extends Controller
     {
         try {
             $orders = Order::new()->where('car_class_id', $request->user->car_class_id)->get();
-            return response()->json(['data' => $orders, 'message' => 'Order accepted!'], 200);
+            return response()->json(['data' => $orders, 'message' => 'OK!'], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }

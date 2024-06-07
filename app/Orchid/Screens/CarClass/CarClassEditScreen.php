@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\CarClass;
 
 use App\Models\CarClass;
+use App\Orchid\Layouts\CarClass\CarClassTariffEditLayout;
 use Orchid\Screen\Action;
 use Orchid\Support\Color;
 use Orchid\Screen\Screen;
@@ -98,6 +99,18 @@ class CarClassEditScreen extends Screen
                 ),
 
 
+            Layout::block(CarClassTariffEditLayout::class)
+                ->title(__('Tariff information'))
+                ->description(__('Set tariff by 1 km price.'))
+                ->commands(
+                    Button::make(__('Save'))
+                        ->type(Color::BASIC)
+                        ->icon('bs.check-circle')
+                        ->canSee($this->carClass->exists)
+                        ->method('save')
+                ),
+
+
             // Layout::block(CarClassRelationTaxiLayout::class)
             //     ->title(__('Choose taxi'))
             //     ->description(__('Collect taxi model'))
@@ -121,6 +134,8 @@ class CarClassEditScreen extends Screen
         $request->validate([
             'carClass.name' => 'required',
             'carClass.slug' => 'required',
+            'carClass.tariff_name' => 'required',
+            'carClass.tariff_price' => 'required',
         ]);
 
         // Fill the model with the entire 'car_class' array from the request

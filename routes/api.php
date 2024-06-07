@@ -19,8 +19,15 @@ use App\Http\Controllers\Client\DriverOrderController;
 Route::group(['prefix' => 'auth'], function () {
 
     Route::get('/me', [AuthController::class, 'getUser'])->middleware('auth.phone');
-    Route::post('/send-code', [AuthController::class, 'sendCode']);
+    Route::post('/logout', [AuthController::class, 'logoutUser'])->middleware('auth.phone');
+    Route::post('/send-code-or-call', [AuthController::class, 'sendCodeOrCall']);
+
+    Route::get('/verify-call', [AuthController::class, 'verifyCall']);
+    Route::post('/resend-call', [AuthController::class, 'resendCall']);
+    Route::post('/approve-call', [AuthController::class, 'approveCall']);
+
     Route::post('/verify-code', [AuthController::class, 'verifyCode']);
+    Route::post('/resend-code', [AuthController::class, 'resendCode']);
 });
 
 Route::group(['prefix' => 'driver'], function () {

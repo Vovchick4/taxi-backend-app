@@ -47,11 +47,11 @@ class PlatformProvider extends OrchidServiceProvider
                 ->route('platform.screens.car_classes'),
 
             Menu::make('Taxi')
-                ->icon('bi.list-ul')
+                ->icon('bi.car-front-fill')
                 ->route('platform.screens.taxi'),
 
-            Menu::make('Driver')
-                ->icon('bi.list-ul')
+            Menu::make('Drivers')
+                ->icon('bi.people-fill')
                 ->route('platform.screens.driver'),
 
             Menu::make(__('Users'))

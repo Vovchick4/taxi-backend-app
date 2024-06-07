@@ -34,8 +34,8 @@ class TaxiListLayout extends Table
                 ->filter(Input::make())
                 ->sort(),
 
-            TD::make('driver', __('Driver info'))
-                ->render(fn (Taxi $taxi) => $taxi->driver->name . ' ' . $taxi->driver->surname . ',<br/>' . $taxi->driver->phone),
+            // TD::make('driver', __('Driver info'))
+            //     ->render(fn (Taxi $taxi) => $taxi->driver->name . ' ' . $taxi->driver->surname . ',<br/>' . $taxi->driver->phone),
 
             TD::make('VIN_code', __('VIN Code'))
                 ->filter(Input::make())

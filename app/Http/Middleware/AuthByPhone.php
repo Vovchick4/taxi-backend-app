@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use App\Models\Client;
+use App\Models\Driver;
 use Illuminate\Http\Request;
 
 class AuthByPhone
@@ -23,12 +24,13 @@ class AuthByPhone
         // Format the token to remove any prefixes
         $formattedRememberToken = $this->formatHeaderToken($rememberToken);
 
-        // Find the client using the token
-        $client = Client::where('remember_token', $formattedRememberToken)->first();
+        // Determine if the request is for a driver or a client
+        $isDriver = filter_var($request->input('isDriver', false), FILTER_VALIDATE_BOOLEAN);
+        $user = $isDriver ? Driver::where('remember_token', $formattedRememberToken)->first() : Client::where('remember_token', $formattedRememberToken)->first();
 
-        if ($client) {
-            // Attach the client to the request for further use
-            $request->merge(['user' => $client]);
+        if ($user) {
+            // Attach the user to the request for further use
+            $request->merge(['user' => $user]);
             return $next($request);
         } else {
             // If authentication fails, return a JSON response with a 403 status code

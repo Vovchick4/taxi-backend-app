@@ -122,16 +122,16 @@ class TaxiEditScreen extends Screen
                         ->method('save')
                 ),
 
-            Layout::block(TaxiDriverLayout::class)
-                ->title(__('Choose a driver'))
-                ->description(__('Collect driver'))
-                ->commands(
-                    Button::make(__('Save'))
-                        ->type(Color::BASIC)
-                        ->icon('bs.check-circle')
-                        ->canSee($this->taxi->exists)
-                        ->method('save')
-                ),
+            // Layout::block(TaxiDriverLayout::class)
+            //     ->title(__('Choose a driver'))
+            //     ->description(__('Collect driver'))
+            //     ->commands(
+            //         Button::make(__('Save'))
+            //             ->type(Color::BASIC)
+            //             ->icon('bs.check-circle')
+            //             ->canSee($this->taxi->exists)
+            //             ->method('save')
+            //     ),
 
         ];
     }
@@ -156,10 +156,10 @@ class TaxiEditScreen extends Screen
         // Relation with car class
         $taxi->car_class()->associate($request->input('taxi.car_class'));
 
-        if ($request->input('taxi.driver')) {
-            // Relation with driver
-            $taxi->driver()->associate($request->input('taxi.driver'));
-        }
+        // if ($request->input('taxi.driver')) {
+        //     // Relation with driver
+        //     $taxi->driver()->associate($request->input('taxi.driver'));
+        // }
 
         // Save the model
         $taxi->save();

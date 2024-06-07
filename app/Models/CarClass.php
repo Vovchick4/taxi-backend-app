@@ -19,9 +19,17 @@ class CarClass extends Model
     protected $fillable = [
         'name',
         'slug',
+        'tariff_name',
+        'is_discount',
+        'tariff_price',
+        'tariff_discount_price'
     ];
 
-    protected $casts = [];
+    protected $casts = [
+        'is_discount' => 'boolean',
+        'tariff_price' => 'double',
+        'tariff_discount_price' => 'double'
+    ];
 
     /**
      * The attributes for which you can use filters in url.

@@ -18,14 +18,19 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ftp.boarttaxi.com.ua >> ~/.ssh/known_hosts
+
       - name: Sync files to server
         run: |
-          rsync -avz --delete --exclude '.env' --exclude 'storage/' --exclude 'vendor/' ./ jbqbtqee@ftp.boarttaxi.com.ua:/home/username/public_html/
+          rsync -avz --delete --exclude '.env' --exclude 'storage/' --exclude 'vendor/' ./ jbqbtqee@ftp.boarttaxi.com.ua:/home/jbqbtqee/public_html/
 
       - name: Run remote commands
         run: |
-          ssh jbqbtqee@ftp.boarttaxi.com.ua 'cd /home/username/public_html && composer install --no-dev && php artisan migrate --force && php artisan cache:clear && php artisan config:cache'
+          ssh jbqbtqee@ftp.boarttaxi.com.ua 'cd /home/jbqbtqee/public_html && composer install --no-dev && php artisan migrate --force && php artisan cache:clear && php artisan config:cache'
 
       - name: Set permissions
         run: |
-          ssh jbqbtqee@ftp.boarttaxi.com.ua 'cd /home/username/public_html && find storage -type d -exec chmod 775 {} \; && find storage -type f -exec chmod 664 {} \; && chmod -R 775 bootstrap/cache'
+          ssh jbqbtqee@ftp.boarttaxi.com.ua 'cd /home/jbqbtqee/public_html && find storage -type d -exec chmod 775 {} \; && find storage -type f -exec chmod 664 {} \; && chmod -R 775 bootstrap/cache'

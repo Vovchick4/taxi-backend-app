@@ -23,13 +23,36 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ftp.boarttaxi.com.ua >> ~/.ssh/known_hosts
 
+      - name: Create .env file from secrets
+        run: |
+          echo "APP_ENV=production" >> .env
+          echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
+          echo "DB_CONNECTION=${{ secrets.DB_CONNECTION }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "ORCHID_ADMIN_PASS=${{ secrets.ORCHID_ADMIN_PASS }}" >> .env
+
       - name: Sync files to server
         run: |
           rsync -avz --delete --exclude '.env' --exclude 'storage/' --exclude 'vendor/' ./ jbqbtqee@ftp.boarttaxi.com.ua:/home/jbqbtqee/public_html/
+          rsync -avz .env jbqbtqee@ftp.boarttaxi.com.ua:/home/jbqbtqee/public_html/.env
 
       - name: Run remote commands
         run: |
-          ssh jbqbtqee@ftp.boarttaxi.com.ua 'cd /home/jbqbtqee/public_html && composer install --no-dev && php artisan migrate --force && php artisan cache:clear && php artisan config:cache'
+          ssh jbqbtqee@ftp.boarttaxi.com.ua '
+           cd /home/jbqbtqee/public_html &&
+           composer install --no-dev &&
+           php artisan orchid:install --force &&  # Re-run Orchid install to ensure all components are updated
+           php artisan migrate --force &&
+           php artisan orchid:link &&  # Create symbolic links for Orchid assets
+           php artisan cache:clear &&
+           php artisan config:cache &&
+           php artisan route:cache &&
+           php artisan view:clear
+          '
 
       - name: Set permissions
         run: |

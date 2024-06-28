@@ -25,7 +25,7 @@ jobs:
 
       - name: Create .env file from secrets
         run: |
-          echo "APP_ENV=production" >> .env
+          echo "APP_ENV=production" > .env
           echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
           echo "DB_CONNECTION=${{ secrets.DB_CONNECTION }}" >> .env
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
@@ -40,20 +40,32 @@ jobs:
           rsync -avz --delete --exclude '.env' --exclude 'storage/' --exclude 'vendor/' ./ jbqbtqee@ftp.boarttaxi.com.ua:/home/jbqbtqee/public_html/
           rsync -avz .env jbqbtqee@ftp.boarttaxi.com.ua:/home/jbqbtqee/public_html/.env
 
+      - name: Ensure storage and cache directories exist and set permissions
+        run: |
+          ssh jbqbtqee@ftp.boarttaxi.com.ua '
+            cd /home/jbqbtqee/public_html &&
+            mkdir -p storage/framework/cache/data &&
+            chmod -R 775 storage/framework/cache
+          '
+
       - name: Run remote commands
         run: |
           ssh jbqbtqee@ftp.boarttaxi.com.ua '
-           cd /home/jbqbtqee/public_html &&
-           composer install --no-dev &&
-           php artisan orchid:install --force &&  # Re-run Orchid install to ensure all components are updated
-           php artisan migrate --force &&
-           php artisan orchid:link &&  # Create symbolic links for Orchid assets
-           php artisan cache:clear &&
-           php artisan config:cache &&
-           php artisan route:cache &&
-           php artisan view:clear
+            cd /home/jbqbtqee/public_html &&
+            composer install --no-dev &&
+            php artisan migrate --force &&
+            php artisan orchid:link &&
+            php artisan cache:clear &&
+            php artisan config:cache &&
+            php artisan route:cache &&
+            php artisan view:clear
           '
 
       - name: Set permissions
         run: |
-          ssh jbqbtqee@ftp.boarttaxi.com.ua 'cd /home/jbqbtqee/public_html && find storage -type d -exec chmod 775 {} \; && find storage -type f -exec chmod 664 {} \; && chmod -R 775 bootstrap/cache'
+          ssh jbqbtqee@ftp.boarttaxi.com.ua '
+            cd /home/jbqbtqee/public_html &&
+            find storage -type d -exec chmod 775 {} \; &&
+            find storage -type f -exec chmod 664 {} \; &&
+            chmod -R 775 bootstrap/cache
+          '

@@ -34,6 +34,10 @@ jobs:
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "ORCHID_ADMIN_PASS=${{ secrets.ORCHID_ADMIN_PASS }}" >> .env
+          echo "TWILIO_FROM=${{ secrets.TWILIO_FROM }}" >> .env
+          echo "TWILIO_SID=${{ secrets.TWILIO_SID }}" >> .env
+          echo "TWILIO_TOKEN=${{ secrets.TWILIO_TOKEN }}" >> .env
+          echo "ABLY_KEY=${{ secrets.ABLY_KEY }}" >> .env
 
       - name: Sync files to server
         run: |
@@ -54,7 +58,8 @@ jobs:
             cd /home/jbqbtqee/public_html &&
             composer install --no-dev &&
             php artisan migrate --force &&
-            php artisan orchid:link &&
+            php artisan orchid:install &&
+            php artisan storage:link &&
             php artisan cache:clear &&
             php artisan config:cache &&
             php artisan route:cache &&

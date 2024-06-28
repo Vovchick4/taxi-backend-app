@@ -13,8 +13,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (! Schema::hasTable('notifications')) {
+        if (!Schema::hasTable('notifications')) {
             Schema::create('notifications', function (Blueprint $table) {
+                $table->engine = 'InnoDB';
                 $table->uuid('id')->primary();
                 $table->string('type');
                 $table->morphs('notifiable');

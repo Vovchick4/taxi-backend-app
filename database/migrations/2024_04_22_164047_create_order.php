@@ -15,6 +15,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->enum('status', [OrderStatus::Active->value, OrderStatus::FindedDriver->value, OrderStatus::Finished->value, OrderStatus::InTheWay->value, OrderStatus::CanceledByDriver->value, OrderStatus::CanceledByClient->value]);
             $table->enum('payment_status', [OrderPaymentStatus::Paid->value, OrderPaymentStatus::NotPaid->value]);

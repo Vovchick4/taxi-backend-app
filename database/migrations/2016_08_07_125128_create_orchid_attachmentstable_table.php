@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('attachments', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->text('name');
             $table->text('original_name');
@@ -30,6 +31,7 @@ return new class extends Migration
         });
 
         Schema::create('attachmentable', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('attachmentable_type');
             $table->unsignedInteger('attachmentable_id');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RegisterRequest;
 use Carbon\Carbon;
 use Twilio\Rest\Client as TwilioClient;
 use Illuminate\Support\Str;
@@ -26,32 +27,53 @@ class AuthController extends Controller
     }
 
     /**
+     * Register user
+     */
+    public function register(RegisterRequest $request): JsonResponse
+    {
+        try {
+            $validatedData = $request->validated();
+            $isDriver = filter_var($request->input('isDriver', false), FILTER_VALIDATE_BOOLEAN);
+
+            $isExist = $isDriver ?  Driver::where('phone', $validatedData['phone'])->first() : Client::where('phone', $validatedData['phone'])->first();
+            if ($isExist) {
+                $text =  $isDriver ? 'Driver' : 'Client';
+                return response()->json(['message' => "{$text} exists with this phone!"], 401);
+            }
+
+            $createUser = $isDriver ? new Driver() : new Client();
+            // Assign common data
+            $createUser->phone = $validatedData['phone'];
+            $createUser->city = $validatedData['city'];
+            $createUser->name = $validatedData['name'];
+            $createUser->surname = $validatedData['surname'];
+            $createUser->email = isset($validatedData['email']) ? $validatedData['email'] : null;
+
+            // Assign driver-specific data
+            if ($isDriver) {
+                $createUser->passport_expiration_date = $validatedData['passport_expiration_date'];
+                if ($request->hasFile('passport_image')) {
+                    $passportImage = $request->file('passport_image');
+                    $imagePath = $passportImage->store('passport_images', 'public');
+                    $createUser->passport_image = $imagePath;
+                }
+            }
+            $createUser->save();
+
+            return response()->json(['message' => 'Register success!', 'data' => $createUser], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Send Code. Verify user indity.
      */
-    public function sendCodeOrCall(SendCodeRequest $request): JsonResponse
+    public function sendCode(SendCodeRequest $request): JsonResponse
     {
         try {
             $request->validated();
             $phone = $request->input('phone');
-            $isDriver = filter_var($request->input('isDriver', false), FILTER_VALIDATE_BOOLEAN);
-
-            if ($isDriver) {
-                $driver = Driver::where('phone', $phone)->first();
-                if ($driver->exists) {
-                    // Send Call Approve
-                    $this->sendCall($phone);
-                    return response()->json(['message' => 'Call sended!', 'data' => ['phone' => $phone, 'link.to' => 'verifycall']], 200);
-                } else {
-                    return response()->json(['message' => 'Driver with this phone not found!'], 404);
-                }
-            }
-
-            $client = Client::where('phone', $phone)->first();
-            if ($client->exists) {
-                // Send Call Approve
-                $this->sendCall($phone);
-                return response()->json(['message' => 'Call sended!', 'data' => ['phone' => $phone, 'link.to' => 'verifycall']], 200);
-            }
 
             $potentialCode = new VerifyCode();
             $potentialCode->phone = $phone;
@@ -81,6 +103,7 @@ class AuthController extends Controller
             $request->validated();
             $code = $request->input('code');
             $phone = $request->input('phone');
+            $isDriver = filter_var($request->input('isDriver', false), FILTER_VALIDATE_BOOLEAN);
 
             // Assuming $phone and $code are defined and provided as input
 
@@ -101,19 +124,15 @@ class AuthController extends Controller
                 return response()->json(['message' => 'This code not valid or expired!'], 422);
             }
 
-            $findedClient = Client::where('phone', $phone)->first();
+            $findCode->delete();
 
-            if ($findedClient) {
-                $findedClient->remember_token = Str::random(60);
-                return response()->json(['message' => 'Welcome back!', 'data' => $findedClient], 200);
+            $findedUser = $isDriver ? Driver::where('phone', $phone)->first() : Client::where('phone', $phone)->first();
+
+            if ($findedUser) {
+                return response()->json(['message' => 'Welcome back!', 'data' => $findedUser], 200);
             }
 
-            $createdUser = new Client();
-            $createdUser->phone = $phone;
-            $createdUser->remember_token = Str::random(60);
-            $createdUser->save();
-
-            return response()->json(['message' => 'Created account!', 'data' => $createdUser->get()], 200);
+            return response()->json(['message' => 'Create account!', 'link.to' => 'personaldata'], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -196,19 +215,15 @@ class AuthController extends Controller
     {
         try {
             $request->validate([
-                'phone' => 'required|phone'
+                'phone' => 'required'
             ]);
             $phone = $request->input('phone');
-
-            $user = Client::where('phone', $phone)->first();
-
-            if (!$user) {
-                return response()->json(['message' => 'User with this phone not found!'], 404);
-            }
 
             $potentialCode = new VerifyCode();
             $potentialCode->phone = $phone;
             $potentialCode->save();
+
+            // Send the verification code via SMS
 
             return response()->json(['message' => 'Send code to the phone!', 'data' => ['phone' => $phone, 'link.to' => 'verifycode']], 200);
         } catch (\Exception $e) {

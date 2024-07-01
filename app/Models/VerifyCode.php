@@ -33,7 +33,7 @@ class VerifyCode extends Model
         // Register the 'saving' event
         static::saving(function ($model) {
             // Automatically generate a 4-digit code
-            $model->code = rand(1000, 9999);
+            $model->code = rand(100000, 999999);
 
             // Set the created_at timestamp to the current time in a specific timezone using Carbon
             $timezone = config('app.timezone'); // Retrieve the timezone from your Laravel configuration

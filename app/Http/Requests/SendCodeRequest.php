@@ -26,7 +26,6 @@ class SendCodeRequest extends FormRequest
     {
         // Define the validation rules for the request
         return [
-            'isDriver' => 'required|boolean',
             'phone' => 'required|string', // Add other rules as needed
         ];
     }

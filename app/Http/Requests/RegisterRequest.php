@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 
-class VerifyCodeRequest extends FormRequest
+class RegisterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -19,16 +19,26 @@ class VerifyCodeRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        return [
-            'phone' => 'required',
-            'code' => 'required|min:6|max:6',
+        $rules = [
             'isDriver' => 'required|boolean',
+            'phone' => 'required|string',
+            'city' => 'required|string',
+            'name' => 'required|string',
+            'surname' => 'required|string',
         ];
+
+        // Additional rules if the user is a driver
+        if ($this->input('isDriver')) {
+            $rules = array_merge($rules, [
+                'passport_expiration_date' => 'required|date_format:Y-m-d',
+                'passport_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+        }
+
+        return $rules;
     }
 
     /**
@@ -39,7 +49,6 @@ class VerifyCodeRequest extends FormRequest
      */
     protected function failedValidation(Validator $validator)
     {
-        // Create a custom JSON response for validation errors
         $errors = $validator->errors()->toArray();
 
         throw new HttpResponseException(

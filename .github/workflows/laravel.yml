@@ -43,8 +43,16 @@ jobs:
 
       - name: Sync files to server
         run: |
-          rsync -avz --delete --exclude '.env' --exclude 'storage/' --exclude 'vendor/' ./ jbqbtqee@ftp.boarttaxi.com.ua:/home/jbqbtqee/public_html/
+          rsync -avz --delete --exclude '.env' --exclude 'storage/' --exclude 'vendor/' \
+            --exclude '.htaccess' --include '.htaccess' ./ jbqbtqee@ftp.boarttaxi.com.ua:/home/jbqbtqee/public_html/
           rsync -avz .env jbqbtqee@ftp.boarttaxi.com.ua:/home/jbqbtqee/public_html/.env
+
+      - name: Set permissions for .htaccess
+        run: |
+          ssh jbqbtqee@ftp.boarttaxi.com.ua '
+            cd /home/jbqbtqee/public_html &&
+            chmod 644 .htaccess
+          '
 
       - name: Ensure storage and cache directories exist and set permissions
         run: |

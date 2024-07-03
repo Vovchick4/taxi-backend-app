@@ -35,7 +35,7 @@ class AuthController extends Controller
             $validatedData = $request->validated();
             $isDriver = filter_var($request->input('isDriver', false), FILTER_VALIDATE_BOOLEAN);
 
-            $isExist = $isDriver ?  Driver::where('phone', $validatedData['phone'])->first() : Client::where('phone', $validatedData['phone'])->first();
+            $isExist = $isDriver ? Driver::where('phone', $validatedData['phone'])->first() : Client::where('phone', $validatedData['phone'])->first();
             if ($isExist) {
                 $text =  $isDriver ? 'Driver' : 'Client';
                 return response()->json(['message' => "{$text} exists with this phone!"], 401);
@@ -60,7 +60,7 @@ class AuthController extends Controller
             }
             $createUser->save();
 
-            return response()->json(['message' => 'Register success!', 'data' => $createUser], 200);
+            return response()->json(['message' => 'Register success!', 'data' => $isDriver ? Driver::find($createUser->id) : Client::find($createUser->id)], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }

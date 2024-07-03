@@ -28,6 +28,7 @@ class RegisterRequest extends FormRequest
             'city' => 'required|string',
             'name' => 'required|string',
             'surname' => 'required|string',
+            'email' => 'nullable|email',
         ];
 
         // Additional rules if the user is a driver

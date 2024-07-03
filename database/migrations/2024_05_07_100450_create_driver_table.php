@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('surname');
             $table->string('phone')->unique();
-            $table->string('email')->unique(); // Email (unique)
+            $table->string('email')->unique()->nullable(); // Email (unique)
             $table->timestamp('verified_at')->nullable();
             $table->enum('role', [ClientRole::Client->value, ClientRole::Driver->value]);
             $table->rememberToken();
@@ -48,12 +48,15 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('drivers');
-
+        // Drop foreign key from 'orders' table before dropping 'drivers' table
         Schema::table('orders', function (Blueprint $table) {
-            // Drop the foreign key and the driver_id column
-            $table->dropForeign(['driver_id']);
-            $table->dropColumn('driver_id');
+            if (Schema::hasColumn('orders', 'driver_id')) {
+                $table->dropForeign(['driver_id']); // Drop the foreign key constraint
+                $table->dropColumn('driver_id'); // Drop the column if necessary
+            }
         });
+
+        // Now drop the 'drivers' table
+        Schema::dropIfExists('drivers');
     }
 };

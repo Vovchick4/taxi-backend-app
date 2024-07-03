@@ -15,8 +15,8 @@ return new class extends Migration
             $table->engine = 'InnoDB';
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
-            $table->string('phone');
+            $table->string('email')->unique()->nullable();
+            $table->string('phone')->unique();
             $table->timestamp('verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

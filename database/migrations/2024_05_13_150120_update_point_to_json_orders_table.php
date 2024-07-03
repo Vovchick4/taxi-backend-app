@@ -23,8 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->point('start_location')->nullable()->change();
-            $table->point('end_location')->nullable()->change();
+            $table->json('start_location')->nullable()->change();
+            $table->json('end_location')->nullable()->change();
         });
     }
 };

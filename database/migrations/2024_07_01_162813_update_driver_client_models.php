@@ -15,12 +15,6 @@ return new class extends Migration
         // Update 'drivers' table
         if (Schema::hasTable('drivers')) {
             Schema::table('drivers', function (Blueprint $table) {
-                // Check and drop the existing unique index if it exists
-                $existingIndexes = DB::select('SHOW INDEX FROM drivers WHERE Key_name = "drivers_email_unique"');
-                if (!empty($existingIndexes)) {
-                    $table->dropUnique('drivers_email_unique');
-                }
-
                 // Conditionally add columns if they do not exist
                 if (!Schema::hasColumn('drivers', 'city')) {
                     $table->string('city', 191);
@@ -37,12 +31,6 @@ return new class extends Migration
         // Update 'clients' table
         if (Schema::hasTable('clients')) {
             Schema::table('clients', function (Blueprint $table) {
-                // Check and drop the existing unique index if it exists
-                $existingIndexes = DB::select('SHOW INDEX FROM clients WHERE Key_name = "clients_email_unique"');
-                if (!empty($existingIndexes)) {
-                    $table->dropUnique('clients_email_unique');
-                }
-
                 // Conditionally add columns if they do not exist
                 if (!Schema::hasColumn('clients', 'city')) {
                     $table->string('city', 191);
@@ -62,9 +50,6 @@ return new class extends Migration
         // Reverse changes in 'drivers' table
         if (Schema::hasTable('drivers')) {
             Schema::table('drivers', function (Blueprint $table) {
-                // Re-add the unique index for email
-                $table->string('email')->unique()->change();
-
                 // Drop the columns if they exist
                 if (Schema::hasColumn('drivers', 'city')) {
                     $table->dropColumn('city');
@@ -81,9 +66,6 @@ return new class extends Migration
         // Reverse changes in 'clients' table
         if (Schema::hasTable('clients')) {
             Schema::table('clients', function (Blueprint $table) {
-                // Re-add the unique index for email
-                $table->string('email')->unique()->change();
-
                 // Drop the columns if they exist
                 if (Schema::hasColumn('clients', 'city')) {
                     $table->dropColumn('city');

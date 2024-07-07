@@ -28,21 +28,30 @@ class DriverListLayout extends Table
 
             TD::make('name', __('Fullname'))
                 ->render(fn (Driver $driver) => Link::make($driver->name . ' ' . $driver->surname)
-                    ->route('platform.screens.driver.edit', $driver->id)),
+                    ->route('platform.screens.driver.edit', $driver->id))
+                ->sort(),
+
+            TD::make('city', __('City')),
 
             TD::make('phone', __('Phone')),
 
-            TD::make('email', __('Email')),
+            TD::make('email', __('Email'))
+                ->render(
+                    fn (Driver $driver) =>
+                    $driver->email
+                        ? $driver->email
+                        : 'No email provided'
+                ),
 
             TD::make('taxi', __('Taxi'))
-                ->render(fn (Driver $driver) => view('label_marker', ['label' => $driver->taxi->brand . ' ' . $driver->taxi->model, 'color' => $driver->taxi->color])),
+                ->render(
+                    fn (Driver $driver) =>
+                    $driver->taxi
+                        ? view('label_marker', ['label' => $driver->taxi->brand . ' ' . $driver->taxi->model, 'color' => $driver->taxi->color])
+                        : 'No taxi attached'
+                ),
 
             TD::make('created_at', __('Created'))
-                ->usingComponent(DateTimeSplit::class)
-                ->align(TD::ALIGN_RIGHT)
-                ->sort(),
-
-            TD::make('updated_at', __('Last edit'))
                 ->usingComponent(DateTimeSplit::class)
                 ->align(TD::ALIGN_RIGHT)
                 ->sort(),

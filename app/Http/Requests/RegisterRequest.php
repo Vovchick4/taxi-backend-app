@@ -35,7 +35,7 @@ class RegisterRequest extends FormRequest
         if ($this->input('isDriver')) {
             $rules = array_merge($rules, [
                 'passport_expiration_date' => 'required|date_format:Y-m-d',
-                'passport_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'passport_image' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096',
             ]);
         }
 

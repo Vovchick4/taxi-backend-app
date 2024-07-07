@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Client;
+namespace App\Http\Controllers\Driver;
 
 use App\Enums\OrderStatus;
 use App\Events\UpdateClientOrderEvent;

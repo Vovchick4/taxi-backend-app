@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Orchid\Attachment\File;
 use App\Http\Requests\RegisterRequest;
 use Carbon\Carbon;
 use Twilio\Rest\Client as TwilioClient;
@@ -13,6 +14,7 @@ use App\Http\Requests\VerifyCodeRequest;
 use App\Models\Driver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -53,9 +55,9 @@ class AuthController extends Controller
             if ($isDriver) {
                 $createUser->passport_expiration_date = $validatedData['passport_expiration_date'];
                 if ($request->hasFile('passport_image')) {
-                    $passportImage = $request->file('passport_image');
-                    $imagePath = $passportImage->store('passport_images', 'public');
-                    $createUser->passport_image = $imagePath;
+                    $file = new File($request->file('passport_image'));
+                    $attachment = $file->load();
+                    $createUser->passport_image = '/storage/' . $attachment->physicalPath();
                 }
             }
             $createUser->save();
@@ -198,6 +200,59 @@ class AuthController extends Controller
     public function getUser(Request $request): JsonResponse
     {
         return response()->json(['message' => 'Retrived user!', 'data' => $request->user], 200);
+    }
+
+    /**
+     * Update a user (Driver or Client)
+     */
+    public function updateUser(Request $request): JsonResponse
+    {
+        try {
+            $user = $request->user; // Assuming you get the user object from the request
+            // Define validation rules based on the user's role
+            $rules = [
+                'city' => 'sometimes|string|max:255',
+                'name' => 'sometimes|string|max:255',
+                'surname' => 'sometimes|string|max:255',
+                'email' => 'sometimes|email|unique:users,email,' . $user->id,
+                'phone' => 'sometimes|string|unique:users,phone,' . $user->id,
+                'avatar_image' => 'sometimes|image|mimes:jpg,jpeg,png,gif|max:4096', // max 4MB
+            ];
+
+            // Additional rules for Driver
+            if ($user instanceof Driver) {
+                $rules['passport_expiration_date'] = 'sometimes|date';
+                $rules['passport_image'] = 'sometimes|image|mimes:jpg,jpeg,png,gif|max:4096'; // max 4MB
+            }
+
+            // Validate the request data
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 400);
+            }
+
+            // Update user fields based on role
+            foreach ($request->all() as $key => $value) {
+                if ($request->hasFile($key)) {
+                    // Handle file upload
+                    $file = new File($request->file($key));
+                    $attachment = $file->load();
+                    $user->$key = '/storage/' . $attachment->physicalPath();
+                } elseif ($key !== '_token' && $key !== 'user' && $key !== 'isDriver') {
+                    // Update only the fields that are not files or unnecessary parameters
+                    $user->$key = $value;
+                }
+            }
+
+            // Save the updated user
+            $user->save();
+
+            // Return a success response
+            return response()->json(['message' => 'User updated successfully!', 'data' => $user], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 
     /**

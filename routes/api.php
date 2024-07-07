@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Client\ClientOrderController;
-use App\Http\Controllers\Client\DriverOrderController;
+use App\Http\Controllers\Driver\DriverOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,8 +19,9 @@ use App\Http\Controllers\Client\DriverOrderController;
 Route::group(['prefix' => 'auth'], function () {
 
     Route::get('/me', [AuthController::class, 'getUser'])->middleware('auth.phone');
-    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/update-user', [AuthController::class, 'updateUser'])->middleware('auth.phone');
     Route::post('/logout', [AuthController::class, 'logoutUser'])->middleware('auth.phone');
+    Route::post('/register', [AuthController::class, 'register']);
     Route::post('/send-code', [AuthController::class, 'sendCode']);
 
     Route::get('/verify-call', [AuthController::class, 'verifyCall']);

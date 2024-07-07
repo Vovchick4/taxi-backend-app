@@ -18,6 +18,13 @@ class DriverEditLayout extends Rows
     public function fields(): array
     {
         return [
+            Input::make('driver.city')
+                ->type('text')
+                ->max(255)
+                ->required()
+                ->title(__('Driver city'))
+                ->placeholder(__('city')),
+
             Input::make('driver.name')
                 ->type('text')
                 ->max(255)
@@ -42,7 +49,6 @@ class DriverEditLayout extends Rows
             Input::make('driver.email')
                 ->type('text')
                 ->max(255)
-                ->required()
                 ->title(__('Driver email'))
                 ->placeholder(__('email')),
         ];

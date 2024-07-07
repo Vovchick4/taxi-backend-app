@@ -11,6 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Orchid\Screen\AsSource;
+use Orchid\Attachment\Attachable;
 
 class Driver extends Authenticatable
 {
@@ -18,13 +19,17 @@ class Driver extends Authenticatable
     use HasFactory;
     use Notifiable;
     use AsSource;
+    use Attachable;
 
     protected $fillable = [
+        'city',
         'name',
         'surname',
         'email',
         'phone',
         'role',
+        'passport_expiration_date',
+        'passport_image',
         'remember_token',
     ];
 
@@ -35,6 +40,16 @@ class Driver extends Authenticatable
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'role' => ClientRole::class,
+    ];
+
+    /**
+     * The attributes for which can use sort in url.
+     *
+     * @var array
+     */
+    protected $allowedSorts = [
+        'name',
+        'created_at',
     ];
 
     /**
@@ -76,5 +91,14 @@ class Driver extends Authenticatable
     public function getFullAttribute(): string
     {
         return $this->attributes['name'] . ' (' . $this->attributes['surname'] . ')' . ' ' . $this->attributes['phone'];
+    }
+
+    // Method to get the full path for passport_image
+    public function getPassportImageUrlAttribute()
+    {
+        if ($this->passport_image) {
+            return public_path('storage') . $this->passport_image;
+        }
+        return null;
     }
 }

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\Driver;
 
 use Illuminate\Validation\Rule;
+use App\Models\Taxi;
 use App\Models\Driver;
 use App\Orchid\Layouts\Driver\DriverEditLayout;
 use App\Orchid\Layouts\Driver\DriverTaxiRelationLayout;
+use App\Orchid\Layouts\Driver\DriverPassportDataLayout;
 use Orchid\Screen\Action;
 use Orchid\Support\Color;
 use Orchid\Screen\Screen;
@@ -107,6 +109,17 @@ class DriverEditScreen extends Screen
                         ->canSee($this->driver->exists)
                         ->method('save')
                 ),
+
+            Layout::block(DriverPassportDataLayout::class)
+                ->title(__('Driver passport'))
+                ->description(__('Update driver passport.'))
+                ->commands(
+                    Button::make(__('Save'))
+                        ->type(Color::BASIC)
+                        ->icon('bs.check-circle')
+                        ->canSee($this->driver->exists)
+                        ->method('save')
+                ),
         ];
     }
 
@@ -117,20 +130,44 @@ class DriverEditScreen extends Screen
     {
         // Validate request data
         $request->validate([
-            'driver.name' => 'required',
-            'driver.surname' => 'required',
-            'driver.phone' => ['required', Rule::unique(Driver::class, 'phone')->ignore($driver)],
-            'driver.email' => Rule::unique(Driver::class, 'email')->ignore($driver),
-            'driver.taxi' => 'required',
+            'driver.city' => 'required|string|max:255',
+            'driver.name' => 'required|string|max:255',
+            'driver.surname' => 'required|string|max:255',
+            'driver.phone' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique(Driver::class, 'phone')->ignore($driver),
+            ],
+            'driver.email' => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique(Driver::class, 'email')->ignore($driver),
+            ],
+            'driver.taxi' => 'nullable|exists:taxi,id', // Ensure taxi exists in the taxis table
+            'driver.passport_image' => 'required',
+            'driver.passport_expiration_date' => 'required|date'
         ]);
 
-        // Fill the model with the entire 'car_class' array from the request
+        // Fill the driver model with validated data
         $driver->fill($request->input('driver'));
 
-        // Realtion with taxi
-        $driver->taxi()->associate($request->input('driver.taxi'));
+        // Associate the taxi if provided
+        if ($request->input('driver.taxi')) {
+            $taxiId = $request->input('driver.taxi');
+            $taxi = Taxi::find($taxiId);
+            if ($taxi) {
+                $driver->taxi()->associate($taxi);
+            } else {
+                return redirect()->back()->withErrors(['driver.taxi' => 'Invalid taxi provided.']);
+            }
+        } else {
+            // If no taxi provided, disassociate any existing taxi
+            $driver->taxi()->dissociate();
+        }
 
-        // Save the model
+        // Save the driver model
         $driver->save();
 
         // Show a toast notification

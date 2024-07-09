@@ -22,6 +22,7 @@ class Driver extends Authenticatable
     use Attachable;
 
     protected $fillable = [
+        'avatar_image',
         'city',
         'name',
         'surname',

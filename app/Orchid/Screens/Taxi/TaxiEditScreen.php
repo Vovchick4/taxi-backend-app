@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\Taxi;
 
 use App\Models\Taxi;
+use App\Orchid\Layouts\Taxi\TaxiInsurancePolicyLayout;
+use App\Orchid\Layouts\Taxi\TaxiTeachPassLayout;
 use Orchid\Screen\Action;
 use Orchid\Support\Color;
 use Orchid\Screen\Screen;
@@ -14,7 +16,6 @@ use Orchid\Screen\Actions\Button;
 use Orchid\Support\Facades\Layout;
 use App\Orchid\Layouts\Taxi\TaxiEditLayout;
 use App\Orchid\Layouts\Taxi\TaxiColorLayout;
-use App\Orchid\Layouts\Taxi\TaxiDriverLayout;
 use App\Orchid\Layouts\Taxi\TaxiRelationClassLayout;
 
 class TaxiEditScreen extends Screen
@@ -122,6 +123,28 @@ class TaxiEditScreen extends Screen
                         ->method('save')
                 ),
 
+            Layout::block(TaxiInsurancePolicyLayout::class)
+                ->title(__('Choose insurance policy taxi'))
+                ->description(__('Collect insurance policy taxi'))
+                ->commands(
+                    Button::make(__('Save'))
+                        ->type(Color::BASIC)
+                        ->icon('bs.check-circle')
+                        ->canSee($this->taxi->exists)
+                        ->method('save')
+                ),
+
+            Layout::block(TaxiTeachPassLayout::class)
+                ->title(__('Choose teach taxi password'))
+                ->description(__('Collect taxi teach passport'))
+                ->commands(
+                    Button::make(__('Save'))
+                        ->type(Color::BASIC)
+                        ->icon('bs.check-circle')
+                        ->canSee($this->taxi->exists)
+                        ->method('save')
+                ),
+
             // Layout::block(TaxiDriverLayout::class)
             //     ->title(__('Choose a driver'))
             //     ->description(__('Collect driver'))
@@ -145,9 +168,14 @@ class TaxiEditScreen extends Screen
         $request->validate([
             'taxi.model' => 'required',
             'taxi.brand' => 'required',
+            'taxi.graduation_year' => 'required',
             'taxi.VIN_code' => 'required',
             'taxi.color' => 'required',
             'taxi.car_class' => 'required',
+            'taxi.insurance_policy_date' => 'required',
+            'taxi.insurance_policy_image' => 'required',
+            'taxi.tech_passport_date' => 'required',
+            'taxi.tech_passport_image' => 'required',
         ]);
 
         // Fill the model with the entire 'car_class' array from the request

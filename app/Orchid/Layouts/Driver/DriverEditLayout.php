@@ -7,6 +7,7 @@ namespace App\Orchid\Layouts\Driver;
 use Orchid\Screen\Field;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Layouts\Rows;
+use Orchid\Screen\Fields\Picture;
 
 class DriverEditLayout extends Rows
 {
@@ -18,6 +19,13 @@ class DriverEditLayout extends Rows
     public function fields(): array
     {
         return [
+            Picture::make('driver.avatar_image')
+                ->title('Avatar Image')
+                ->storage('public')
+                ->targetRelativeUrl()
+                ->acceptedTypes('image/*') // Allow any image type
+                ->maxFilesize(4), // Max file size in megabytes
+
             Input::make('driver.city')
                 ->type('text')
                 ->max(255)

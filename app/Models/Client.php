@@ -18,6 +18,7 @@ class Client extends Authenticatable
     use Notifiable;
 
     protected $fillable = [
+        'avatar_image',
         'name',
         'email',
         'phone',

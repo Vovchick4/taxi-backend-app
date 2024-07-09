@@ -6,7 +6,6 @@ namespace App\Orchid\Layouts\CarClass;
 
 use Orchid\Screen\Field;
 use Orchid\Screen\Fields\CheckBox;
-use Orchid\Screen\Fields\Switcher;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Layouts\Rows;
 

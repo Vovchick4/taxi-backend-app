@@ -24,11 +24,17 @@ class Taxi extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
+        'is_child_chair',
+        'graduation_year',
         'model',
         'brand',
         'VIN_code',
         'color',
-        'car_class_id'
+        'car_class_id',
+        'insurance_policy_date',
+        'insurance_policy_image',
+        'tech_passport_date',
+        'tech_passport_image',
     ];
 
     protected $casts = [

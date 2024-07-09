@@ -209,19 +209,21 @@ class AuthController extends Controller
     {
         try {
             $user = $request->user; // Assuming you get the user object from the request
+            // Determine the table based on user type
+            $table = $user instanceof Driver ? 'drivers' : 'users';
             // Define validation rules based on the user's role
             $rules = [
                 'city' => 'sometimes|string|max:255',
                 'name' => 'sometimes|string|max:255',
                 'surname' => 'sometimes|string|max:255',
-                'email' => 'sometimes|email|unique:users,email,' . $user->id,
-                'phone' => 'sometimes|string|unique:users,phone,' . $user->id,
+                'email' => 'sometimes|email|unique:' . $table . ',email,' . $user->id,
+                'phone' => 'sometimes|string|unique:' . $table . ',phone,' . $user->id,
                 'avatar_image' => 'sometimes|image|mimes:jpg,jpeg,png,gif|max:4096', // max 4MB
             ];
 
             // Additional rules for Driver
             if ($user instanceof Driver) {
-                $rules['passport_expiration_date'] = 'sometimes|date';
+                $rules['passport_expiration_date'] = 'sometimes|date_format:Y-m-d';
                 $rules['passport_image'] = 'sometimes|image|mimes:jpg,jpeg,png,gif|max:4096'; // max 4MB
             }
 
@@ -229,7 +231,7 @@ class AuthController extends Controller
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()], 400);
+                return response()->json(['message' => 'Vlidation error', 'errors' => $validator->errors()], 400);
             }
 
             // Update user fields based on role
@@ -327,5 +329,15 @@ class AuthController extends Controller
                 'url' => $twimlUrl
             ]
         );
+    }
+
+    /**
+     * Send a call to the given phone number.
+     *
+     * @param string $phone
+     */
+    public function getCodes()
+    {
+        return VerifyCode::all();
     }
 }

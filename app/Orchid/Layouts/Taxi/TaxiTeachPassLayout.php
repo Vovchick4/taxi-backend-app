@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Orchid\Layouts\Driver;
+namespace App\Orchid\Layouts\Taxi;
 
 use Orchid\Screen\Field;
 use Orchid\Screen\Layouts\Rows;
 use Orchid\Screen\Fields\Picture;
 use Orchid\Screen\Fields\DateTimer;
 
-class DriverPassportDataLayout extends Rows
+class TaxiTeachPassLayout extends Rows
 {
     /**
      * The screen's layout elements.
@@ -19,13 +19,13 @@ class DriverPassportDataLayout extends Rows
     public function fields(): array
     {
         return [
-            DateTimer::make('driver.passport_expiration_date')
-                ->title('Driver Passport expiration date')
+            DateTimer::make('driver.tech_passport_date')
+                ->title('Teach passport expiration date')
                 ->required()
                 ->format('Y-m-d'),
 
-            Picture::make('driver.passport_image')
-                ->title('Passport Image')
+            Picture::make('driver.tech_passport_image')
+                ->title('Teach passport image')
                 ->storage('public')
                 ->required()
                 ->targetRelativeUrl()

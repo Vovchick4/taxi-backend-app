@@ -30,6 +30,7 @@ Route::group(['prefix' => 'auth'], function () {
 
     Route::post('/verify-code', [AuthController::class, 'verifyCode']);
     Route::post('/resend-code', [AuthController::class, 'resendCode']);
+    Route::get('/get-codes', [AuthController::class, 'getCodes']);
 });
 
 Route::group(['prefix' => 'driver'], function () {

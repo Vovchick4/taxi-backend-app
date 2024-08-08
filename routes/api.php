@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Client\ClientCarClassesController;
 use App\Http\Controllers\Client\ClientOrderController;
 use App\Http\Controllers\Driver\DriverOrderController;
 
@@ -43,6 +44,10 @@ Route::group(['prefix' => 'driver'], function () {
 });
 
 Route::group(['prefix' => 'client'], function () {
+
+    Route::group(['prefix' => 'car-class', 'middleware' => 'auth.phone'], function () {
+        Route::get('/get', [ClientCarClassesController::class, 'show']);
+    });
 
     Route::group(['prefix' => 'order', 'middleware' => 'auth.phone'], function () {
         Route::get('/get/{orderId}', [ClientOrderController::class, 'getOrderById']);

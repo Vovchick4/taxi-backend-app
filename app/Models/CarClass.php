@@ -22,7 +22,8 @@ class CarClass extends Model
         'tariff_name',
         'is_discount',
         'tariff_price',
-        'tariff_discount_price'
+        'tariff_discount_price',
+        'car_class_image'
     ];
 
     protected $casts = [

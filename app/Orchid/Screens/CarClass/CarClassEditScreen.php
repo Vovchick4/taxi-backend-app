@@ -14,6 +14,8 @@ use Orchid\Support\Facades\Toast;
 use Orchid\Screen\Actions\Button;
 use Orchid\Support\Facades\Layout;
 use App\Orchid\Layouts\CarClass\CarClassEditLayout;
+use App\Orchid\Layouts\CarClass\CarClassImageLayout;
+
 // use App\Orchid\Layouts\CarClass\CarClassRelationTaxiLayout;
 
 class CarClassEditScreen extends Screen
@@ -110,6 +112,17 @@ class CarClassEditScreen extends Screen
                         ->method('save')
                 ),
 
+            Layout::block(CarClassImageLayout::class)
+                ->title(__('Preview'))
+                ->description(__('Image for car class.'))
+                ->commands(
+                    Button::make(__('Save'))
+                        ->type(Color::BASIC)
+                        ->icon('bs.check-circle')
+                        ->canSee($this->carClass->exists)
+                        ->method('save')
+                ),
+
 
             // Layout::block(CarClassRelationTaxiLayout::class)
             //     ->title(__('Choose taxi'))
@@ -136,6 +149,7 @@ class CarClassEditScreen extends Screen
             'carClass.slug' => 'required',
             'carClass.tariff_name' => 'required',
             'carClass.tariff_price' => 'required',
+            'carClass.car_class_image' => 'required',
         ]);
 
         // Fill the model with the entire 'car_class' array from the request

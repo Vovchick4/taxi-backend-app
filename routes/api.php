@@ -46,7 +46,7 @@ Route::group(['prefix' => 'driver'], function () {
 Route::group(['prefix' => 'client'], function () {
 
     Route::group(['prefix' => 'car-class', 'middleware' => 'auth.phone'], function () {
-        Route::get('/get', [ClientCarClassesController::class, 'show']);
+        Route::get('/get', [ClientCarClassesController::class, 'getCarsTypes']);
     });
 
     Route::group(['prefix' => 'order', 'middleware' => 'auth.phone'], function () {

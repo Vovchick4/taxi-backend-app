@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Driver;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;

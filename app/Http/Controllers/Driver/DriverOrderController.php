@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Driver;
 
 use App\Enums\OrderStatus;
-use App\Events\UpdateClientOrderEvent;
+use App\Events\Client\UpdateClientOrderEvent;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Driver;
 use App\Models\Order;
+use Illuminate\Http\Request;
 
 class DriverOrderController extends Controller
 {
@@ -40,13 +41,13 @@ class DriverOrderController extends Controller
     /**
      * Accept Order
      */
-    public function acceptOrder($request, $orderId): JsonResponse
+    public function acceptOrder(Request $request, $orderId): JsonResponse
     {
         try {
             $order = Order::find($orderId);
             if (!$order) {
                 return response()->json(['data' => [], 'message' => 'Order not found!'], 404);
-            } else if ($order->status !== OrderStatus::New->value) {
+            } else if ($order->status !== OrderStatus::New) {
                 return response()->json(['data' => [], 'message' => 'The order has already been confirmed by another driver!'], 500);
             }
 

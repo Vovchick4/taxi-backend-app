@@ -10,7 +10,7 @@ use App\Events\TrackOrderEvent;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Events\UpdateDriverOrdersEvent;
+use App\Events\Driver\UpdateDriverOrdersEvent;
 use App\Http\Requests\OrderCreateRequest;
 
 class ClientOrderController extends Controller
